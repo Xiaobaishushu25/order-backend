@@ -1,7 +1,10 @@
+use std::io;
+use log::info;
 use salvo::http::{ParseError, StatusCode, StatusError};
 use salvo::oapi::{self, EndpointOutRegister, ToSchema};
 use salvo::prelude::*;
 use thiserror::Error;
+use tracing::error;
 
 #[derive(Error, Debug)]
 pub enum AppError {
@@ -21,6 +24,8 @@ pub enum AppError {
     Seaorm(#[from] sea_orm::DbErr),
     #[error("validation error:`{0}`")]
     Validation(#[from] validator::ValidationErrors),
+    #[error("io::Error:`{0}`")]
+    IoError(#[from] io::Error),
 }
 impl AppError {
     pub fn public<S: Into<String>>(msg: S) -> Self {
@@ -55,7 +60,9 @@ impl Writer for AppError {
                 .brief(format!("Unknown error happened: {e}"))
                 .cause(e),
         };
+        error!("{}", data);
         res.render(data);
+        info!("res {}",res);
     }
 }
 impl EndpointOutRegister for AppError {
@@ -77,3 +84,5 @@ impl EndpointOutRegister for AppError {
         );
     }
 }
+
+pub type AppResult<T> = Result<T, AppError>;

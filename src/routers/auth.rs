@@ -1,31 +1,13 @@
 use cookie::Cookie;
-use rinja::Template;
+use log::info;
 use salvo::oapi::extract::*;
 use salvo::prelude::*;
-use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 
+use crate::das::users::UserCurd;
 use crate::entities::users::Model;
-use crate::entities::{prelude::Users, users};
 use crate::hoops::jwt;
-use crate::{db, json_ok, utils, AppResult, JsonResult};
-
-#[handler]
-pub async fn login_page(res: &mut Response) -> AppResult<()> {
-    #[derive(Template)]
-    #[template(path = "login.html")]
-    struct LoginTemplate {}
-    if let Some(cookie) = res.cookies().get("jwt_token") {
-        let token = cookie.value().to_string();
-        if jwt::decode_token(&token) {
-            res.render(Redirect::other("/users"));
-            return Ok(());
-        }
-    }
-    let hello_tmpl = LoginTemplate {};
-    res.render(Text::Html(hello_tmpl.render().unwrap()));
-    Ok(())
-}
+use crate::{JsonResult, utils};
 
 #[derive(Deserialize, ToSchema, Default, Debug)]
 pub struct LoginInData {
@@ -41,43 +23,39 @@ pub struct LoginOutData {
 }
 #[endpoint(tags("auth"))]
 pub async fn post_login(
-    idata: JsonBody<LoginInData>,
+    in_data: JsonBody<LoginInData>,
     res: &mut Response,
 ) -> JsonResult<LoginOutData> {
-    let idata = idata.into_inner();
-    let conn = db::pool();
+    let idata = in_data.into_inner();
+    info!("login:{:?}",idata);
     let Some(Model {
         id,
         username,
         password,
-    }) = Users::find()
-        .filter(users::Column::Username.eq(idata.username))
-        .one(conn)
-        .await?
+    }) = UserCurd::query_by_username(idata.username).await?
     else {
         return Err(StatusError::unauthorized()
             .brief("User does not exist.")
+            .detail("User does not exist.")
             .into());
     };
-
-    if utils::verify_password(&idata.password, &password).is_err()
-    {
+    if utils::verify_password(&idata.password, &password).is_err() {
         return Err(StatusError::unauthorized()
-            .brief("Addount not exist or password is incorrect.")
+            .brief("password is incorrect.")
             .into());
     }
 
     let (token, exp) = jwt::get_token(&id)?;
-    let odata = LoginOutData {
+    let out_data = LoginOutData {
         id,
         username,
         token,
         exp,
     };
-    let cookie = Cookie::build(("jwt_token", odata.token.clone()))
+    let cookie = Cookie::build(("jwt_token", out_data.token.clone()))
         .path("/")
         .http_only(true)
         .build();
     res.add_cookie(cookie);
-    json_ok(odata)
+    Ok(Json(out_data))
 }

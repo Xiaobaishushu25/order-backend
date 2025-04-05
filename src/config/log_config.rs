@@ -22,7 +22,7 @@ pub struct LogConfig{
 impl Default for LogConfig{
     fn default() -> Self {
         LogConfig{
-            file_name: "order.log".into(),
+            file_name: "order".into(),
             level: "info".into(),
             rolling: "daily".into(),
         }
