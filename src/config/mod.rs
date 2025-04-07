@@ -1,7 +1,7 @@
 pub mod db;
 pub mod log_config;
 
-use std::{env, fs, panic};
+use std::{env, fs};
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::PathBuf;
@@ -11,10 +11,8 @@ use log::error;
 use rand::distr::Alphanumeric;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use tracing_subscriber::{Layer, Registry};
 use crate::config::log_config::LogConfig;
 use crate::error::AppResult;
-use crate::utils::check_file;
 
 pub static CURRENT_DIR: LazyLock<PathBuf> = LazyLock::new(|| {
     let current_dir = env::current_dir().expect("无法获取当前目录");
@@ -57,7 +55,7 @@ fn check_config_file(path: &PathBuf, current_dir: &PathBuf) -> AppResult<ServerC
     //如果上面正确读取配置文件就已经返回了，到这里说明配置文件没有内容，需要初始化默认配置
     // let config = Config::init_default();
     let config = ServerConfig::default();
-    let config_string = toml::to_string(&config).map_err(|e| {anyhow::anyhow!("ServerConfig序列化错误")})?;
+    let config_string = toml::to_string(&config).map_err(|e| {anyhow::anyhow!("ServerConfig序列化错误:{:#}",e)})?;
     config_file.write_all(config_string.as_bytes())?;
     Ok(config)
 }

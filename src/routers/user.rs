@@ -5,18 +5,13 @@ use validator::Validate;
 
 use crate::{JsonResult};
 use crate::das::users::UserCurd;
-use crate::dto::user::UserInfo;
+use crate::dto::user::{CreateUserData, UserInfo};
+use crate::utils::hash_password;
 
-#[derive(Deserialize, Debug, Validate, ToSchema, Default)]
-pub struct CreateInData {
-    #[validate(length(min = 5, message = "username length must be greater than 5"))]
-    pub username: String,
-    #[validate(length(min = 6, message = "password length must be greater than 5"))]
-    pub password: String,
-}
 #[endpoint(tags("users"))]
-pub async fn create_user(in_data: JsonBody<CreateInData>) -> JsonResult<UserInfo> {
-    let CreateInData { username, password } = in_data.into_inner();
+pub async fn create_user(in_data: JsonBody<CreateUserData>) -> JsonResult<UserInfo> {
+    let CreateUserData { username, password } = in_data.into_inner();
+    let password = hash_password(&password)?;
     let id = UserCurd::insert_user(username.clone(), password).await?;
     Ok(Json(UserInfo {id, username}))
 }

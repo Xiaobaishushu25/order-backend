@@ -1647,7 +1647,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "argon2",
- "cookie",
  "jsonwebtoken",
  "log",
  "rand 0.9.0",

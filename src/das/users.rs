@@ -40,3 +40,17 @@ impl UserCurd {
         Ok(user)
     }
 }
+#[cfg(test)]
+mod tests {
+    use crate::config::db::init_db_coon;
+    use crate::das::users::UserCurd;
+    use crate::utils::hash_password;
+
+    #[tokio::test]
+    async fn test_create_user() {
+        init_db_coon().await;
+        let password = "abc123";
+        let password = hash_password(&password).unwrap();
+        UserCurd::insert_user("test".to_string(), password).await.unwrap();
+    }
+}

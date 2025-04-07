@@ -34,7 +34,7 @@ async fn main() {
     let cors = Cors::new()
         .allow_origin("http://localhost:5173")
         .allow_methods(vec![Method::GET, Method::POST, Method::DELETE, Method::OPTIONS])
-        .allow_headers(vec!["Content-Type"]) // 添加允许的请求头
+        .allow_headers(vec!["Content-Type","Authorization"]) // 添加允许的请求头
         .into_handler();
     let service = Service::new(routers::root()).hoop(Logger::new()).hoop(cors);
     println!("🔄 在以下位置监听 {}", get_config().listen_addr);

@@ -1,5 +1,5 @@
 use std::{fs, io, panic};
-use log::{error, info};
+use log::{error};
 use serde::{Deserialize, Serialize};
 use time::macros::format_description;
 use time::UtcOffset;

@@ -4,3 +4,6 @@ pub mod prelude;
 
 pub mod users;
 pub mod table;
+pub mod category;
+pub mod dish;
+pub mod category_dish_map;

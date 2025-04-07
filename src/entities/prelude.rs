@@ -3,3 +3,11 @@
 pub use super::users::Entity as Users;
 pub use super::users::Model as User;
 
+pub use super::category::Entity as Categories;
+pub use super::category::Model as Category;
+
+pub use super::dish::Entity as Dishes;
+pub use super::dish::Model as Dish;
+
+pub use super::category_dish_map::Entity as CategoryDishMaps;
+pub use super::category_dish_map::Model as CategoryDishMap;

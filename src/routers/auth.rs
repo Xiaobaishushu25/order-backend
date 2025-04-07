@@ -1,4 +1,3 @@
-use cookie::Cookie;
 use log::info;
 use salvo::oapi::extract::*;
 use salvo::prelude::*;
@@ -52,10 +51,10 @@ pub async fn post_login(
         token,
         exp,
     };
-    let cookie = Cookie::build(("jwt_token", out_data.token.clone()))
-        .path("/")
-        .http_only(true)
-        .build();
-    res.add_cookie(cookie);
+    // let cookie = Cookie::build(("jwt_token", out_data.token.clone()))
+    //     .path("/")
+    //     .http_only(true)
+    //     .build();
+    // res.add_cookie(cookie);
     Ok(Json(out_data))
 }

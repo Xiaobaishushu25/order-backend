@@ -1,6 +1,5 @@
 use std::fs;
 use std::fs::File;
-use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::OnceLock;
 use std::time::Duration;
@@ -9,7 +8,6 @@ use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use crate::config::CURRENT_DIR;
 use crate::entities::table::create_all_need_table;
 use crate::error::AppResult;
-use crate::utils::check_file;
 
 pub static DB: OnceLock<DatabaseConnection> = OnceLock::new();
 

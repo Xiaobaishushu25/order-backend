@@ -14,7 +14,6 @@ anyhow = "1.0.79"
 
 sea-orm = { version = "1", "features"  = ["runtime-tokio-rustls", "sqlx-sqlite","macros"]}
 salvo = { version = "0.77.1", features = ["rustls","oapi","logging","jwt-auth","cors"]}
-cookie = "0.18.0"
 tokio = { version = "1.43.0", features = ["macros", "rt-multi-thread"] }
 
 

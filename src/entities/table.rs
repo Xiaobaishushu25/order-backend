@@ -1,6 +1,6 @@
 use log::{error, info};
 use sea_orm::{ConnectionTrait, DatabaseConnection, EntityTrait, Schema};
-use crate::entities::prelude::Users;
+use crate::entities::prelude::{Categories, CategoryDishMaps, Dishes, Users};
 
 async fn create_table<E>(db_connection: &sea_orm::DatabaseConnection, entity: E)
 where
@@ -18,13 +18,15 @@ where
     }
 }
 pub async fn create_all_need_table(db: &DatabaseConnection) {
-    // create_table(db, Tags).await;
     create_table(db, Users).await;
+    create_table(db, Categories).await;
+    create_table(db, Dishes).await;
+    create_table(db, CategoryDishMaps).await;
 }
 #[cfg(test)]
 mod test {
     use crate::config::db::{get_db_coon, init_db_coon};
-    use crate::entities::table::{create_all_need_table, create_table};
+    use crate::entities::table::{create_all_need_table};
     #[tokio::test]
     async fn test_create_table() {
         init_db_coon().await;

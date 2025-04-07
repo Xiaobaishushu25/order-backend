@@ -1,5 +1,4 @@
 use std::io;
-use log::info;
 use salvo::http::{ParseError, StatusCode, StatusError};
 use salvo::oapi::{self, EndpointOutRegister, ToSchema};
 use salvo::prelude::*;
@@ -62,7 +61,6 @@ impl Writer for AppError {
         };
         error!("{}", data);
         res.render(data);
-        info!("res {}",res);
     }
 }
 impl EndpointOutRegister for AppError {

@@ -1,12 +1,16 @@
 use anyhow::Result;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, EncodingKey, Validation};
 use log::info;
+use salvo::http::headers::Authorization;
+use salvo::http::HeaderValue;
 use salvo::jwt_auth::{ConstDecoder, CookieFinder, HeaderFinder, QueryFinder};
+use salvo::oapi::extract::HeaderParam;
 use salvo::prelude::*;
 use serde::{Deserialize, Serialize};
 use time::{Duration, OffsetDateTime};
 
-use crate::config::{self, get_config, JwtConfig};
+use crate::config::{get_config, JwtConfig};
+use crate::JsonResult;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JwtClaims {
@@ -58,4 +62,15 @@ pub fn decode_token(token: &str) -> bool {
         &validation,
     )
     .is_ok()
+}
+#[handler]
+pub async fn validate_token(req: &Request)->JsonResult<bool>{
+    let option = req.header::<String>("authorization");
+    info!("{:?}",option);
+    if let Some(token) = req.headers().get("authorization").and_then(|c| c.to_str().ok()).map(|s| s.trim_start_matches("Bearer ")){
+        if decode_token(token){
+            return Ok(Json(true));
+        }
+    }
+    Ok(Json(false))
 }
